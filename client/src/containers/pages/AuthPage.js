@@ -3,7 +3,7 @@ import React, { useState, useReducer, useCallback } from 'react';
 
 import Input from '../../components/UI/Input';
 
-import { OnSignin, OnSignup, useAuthDispatch } from '../../context/authContext/index';
+import { onSignin, onSignup, useAuthDispatch } from '../../context/authContext/index';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -31,19 +31,19 @@ const formReducer = (state, action) => {
 }
 
 const AuthPage = props => {
-  // const [error, setError] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
   const [signup, setSignup] = useState(true);
   const dispatch = useAuthDispatch();
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValue: {
       email: '',
-      password: ''
+      password: '',
+      username: ''
     },
     inputValidities: {
       email: false,
-      password: false
+      password: false,
+      username: false
     },
     formIsValid: false,
   })
@@ -56,25 +56,34 @@ const AuthPage = props => {
     })
   }, [dispatchFormState]);
 
-  const authHandler = () => {
-    // setIsLoading(true);
-    let result; 
-    try {
-      if(signup){
-        OnSignup(dispatch, formState.inputValue);
+  const authHandler = async () => {
+        try {
+      if (signup) {
+        onSignup(dispatch, formState.inputValue);
+      } else {
+        onSignin(dispatch, formState.inputValue);
       }
-    } catch {
-
+    } catch (err) {
+      console.log(err.message);
     }
   }
   return (
     <div>
       <Input
+        id="username"
+        label="Username"
+        required
+        type='username'
+        errorText="Please enter a valid username."
+        onInputChange={inputChangeHandler}
+        initialValue=""
+      />
+      <Input
         id="email"
         label="E-Mail"
         required
         type='email'
-        email
+        email='true'
         errorText="Please enter a valid email address."
         onInputChange={inputChangeHandler}
         initialValue=""
@@ -84,16 +93,14 @@ const AuthPage = props => {
         label="Password"
         type='password'
         required
-        minLength={5}
-        autoCapitalize="none"
+        minLength={8}
         errorText="Please enter a valid password."
         onInputChange={inputChangeHandler}
         initialValue=""
       />
-      <button
-        onClick={authHandler}>{signup ? 'Signup' : 'Signin'}</button>
-      <button
-        onClick={authHandler}
+      <button 
+      onClick={authHandler}>{signup ? 'Signup' : 'Signin'}</button>
+      <button 
         onClick={() => setSignup(prevSignup => !prevSignup)}>Switch to {signup ? 'Signin' : 'Signup'}</button>
     </div>
   )

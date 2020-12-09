@@ -53,7 +53,7 @@ const Input = props => {
   }
   return (
     <div>
-      <label for="male">{props.label}</label>
+      <label>{props.label}</label>
       <input
         {...props}
         name={props.fieldType}
