@@ -23,12 +23,13 @@ const inputReducer = (state, action) => {
 }
 
 const Input = props => {
+  const { onInputChange, id, label, minLength, initialValue, errorText, ...inputAtt } = props;
+
   const [inputState, dispatch] = useReducer(inputReducer, {
-    value: props.initialValue ? props.initialValue : '',
+    value: initialValue ? initialValue : '',
     isValid: '',
     touched: false,
   });
-  const { onInputChange, id } = props;
 
   useEffect(() => {
     if (inputState.touched) {
@@ -43,7 +44,7 @@ const Input = props => {
     if (props.email && !emailRegex.test(text.toLowerCase())) {
       isValid = false;
     }
-    if (props.minLength != null && text.length < props.minLength) {
+    if (minLength != null && text.length < minLength) {
       isValid = false;
     }
     dispatch({ type: INPUT_CHANGE, value: text, isValid: isValid, })
@@ -53,15 +54,14 @@ const Input = props => {
   }
   return (
     <div>
-      <label>{props.label}</label>
+      <label>{label}</label>
       <input
-        {...props}
-        name={props.fieldType}
-        placeholder={props.placeholder}
-        value={inputState.value}
-        onChange={(e) => textChangeHandler(e.target.value)}
+        {...inputAtt}
+        value={inputState.value} 
         onBlur={lostFocusHandler}
-      />
+        onChange={(e) => textChangeHandler(e.target.value)}
+
+        />
     </div>
   )
 }
