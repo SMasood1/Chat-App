@@ -3,7 +3,8 @@ import React, { useState, useReducer, useCallback } from 'react';
 
 import Input from '../../components/UI/Input';
 
-import { onSignin, onSignup, useAuthDispatch } from '../../context/authContext/index';
+import { onSignin, onSignup, useAuthDispatch, useAuthState } from '../../context/authContext/index';
+import ErrorMessages from '../ErrorMessages';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -31,7 +32,11 @@ const formReducer = (state, action) => {
 }
 
 const AuthPage = props => {
+  const [isLoading, setIsLoading] = useState(false);
   const [signup, setSignup] = useState(true);
+
+  const { errorMessages } = useAuthState();
+  console.log(errorMessages);
   const dispatch = useAuthDispatch();
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
@@ -57,7 +62,8 @@ const AuthPage = props => {
   }, [dispatchFormState]);
 
   const authHandler = async () => {
-        try {
+    setIsLoading(true);
+    try {
       if (signup) {
         onSignup(dispatch, formState.inputValue);
       } else {
@@ -66,6 +72,7 @@ const AuthPage = props => {
     } catch (err) {
       console.log(err.message);
     }
+    setIsLoading(false);
   }
   return (
     <div>
@@ -98,10 +105,13 @@ const AuthPage = props => {
         onInputChange={inputChangeHandler}
         initialValue=""
       />
-      <button 
-      onClick={authHandler}>{signup ? 'Signup' : 'Signin'}</button>
-      <button 
+
+      {isLoading ?
+        (<div>...Loading</div>) :
+        (<button onClick={authHandler}>{signup ? 'Signup' : 'Signin'}</button>)}
+      <button
         onClick={() => setSignup(prevSignup => !prevSignup)}>Switch to {signup ? 'Signin' : 'Signup'}</button>
+      {errorMessages.length > 0 ? <ErrorMessages errorMessages={errorMessages} /> : null}
     </div>
   )
 }

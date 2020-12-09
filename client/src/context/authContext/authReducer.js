@@ -1,26 +1,33 @@
-import React, { useReducer } from 'react';
-// import styled from 'styled-components';
-
 const SIGNUP = 'SIGNUP';
 const SIGNIN = 'SIGNIN';
+const CLEANUP = 'CLEANUP';
 
 const authInitialState = {
   token: '',
-  email: '',
-  password: '',
-  errorMessage: ''
+  errorMessages: []
 }
 
 const authReducer = (state, action) => {
   switch (action.type) {
     case SIGNUP:
-      break;
-      
+      if (action.payload.errorType === 'INPUT_ERROR') {
+        return {
+          ...state,
+          errorMessages: action.payload.validationError
+        }
+      } else {
+        return {
+          ...state,
+          errorMessages: [{ param: action.payload.errorType, msg: action.payload.message }]
+        }
+      }
     case SIGNIN:
+      break;
+    case CLEANUP:
       break;
 
     default:
-      
+
 
   }
 }
